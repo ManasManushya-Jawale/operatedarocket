@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <emails>
-    <email id="45736361706554686544656570576f726c64" send="1" title="BlackMail">
+    <email id="68363636406461726b2e636f6d" title="BlackMail">
         <body>
         Astronaut,
         You've been selected for the Intestaller Travel project. Congratulations? Hardly.
@@ -12,7 +12,7 @@
         To confirm your decision, type: choice 4c6976654f72446965
         </body>
     </email>
-    <email id="43686f696365" send="1" title="Help Me">
+    <email id="nolangilmore07@outlook.com" title="Help Me">
         <body>
         Hi Friend,
         I need your help. I'm trapped in a place I can't escape from, and I don't know how much longer I can hold on.
@@ -29,13 +29,13 @@ ________________________________________________________________________________
         Hey, it's we, we told you to resign.
         We are watching you.
 _________________________________________________________________________________
-        \u001B[31m█▓▒░ NOLAN IS DEAD ░▒▓█\u001B[0m
-        \u001B[90m>> Last heartbeat: 00:00:13\u001B[0m
-        \u001B[31m>> Integrity breach detected...\u001B[0m
-        \u001B[90m>> Location: Sector 7 - Unreachable\u001B[0m
-        \u001B[34m>> Found an image from Sector 7...\u001B[0m
-        \u001B[90m>> Displaying image...\u001B[0m
-        \u001B[32m>> use \u001B[34m"web-image 2f696d6167652f41414141414848482e706e67"\u001B[34m to view it\u001D[0m
+        [31]█▓▒░ NOLAN IS DEAD ░▒▓█[0m]
+        [90]>> Last heartbeat: 00:00:13[0]
+        [31]>> Integrity breach detected...[0]
+        [90]>> Location: Sector 7 - Unreachable[0]
+        [34]>> Found an image from Sector 7...[0]
+        [90]>> Displaying image...[0]
+        [32]>> use [34]"web-image 2f696d6167652f41414141414848482e706e67"[34] to view it[0]
         </body>
     </email>
 </emails>

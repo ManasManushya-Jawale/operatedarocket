@@ -9,24 +9,21 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.shell.component.view.TerminalUI;
-import org.springframework.shell.component.view.TerminalUIBuilder;
-import org.springframework.shell.component.view.control.BoxView;
-import org.springframework.shell.component.view.screen.Screen.Writer;
-import org.springframework.shell.geom.HorizontalAlign;
-import org.springframework.shell.geom.Rectangle;
-import org.springframework.shell.geom.VerticalAlign;
+import org.springframework.shell.component.flow.ComponentFlow;
+import org.springframework.shell.component.flow.SelectItem;
+import org.springframework.shell.component.flow.ComponentFlow.ComponentFlowResult;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
 import com.example.operatedarocket.utils.Emails.Email;
 import com.example.operatedarocket.utils.Emails.EmailReader;
+import com.example.operatedarocket.utils.minigame.MGameUtils;
 
 @ShellComponent
 public class DefaultCommands {
     @Autowired
-    TerminalUIBuilder builder;
+    ComponentFlow.Builder builder;
 
     @ShellMethod("Open inbox panel")
     public void inbox() {
@@ -34,50 +31,51 @@ public class DefaultCommands {
             System.err.println("TerminalUIBuilder is not initialized.");
             return;
         }
-
-        try {
-            TerminalUI ui = builder.build();
-
-            // Safely build inbox text
-            StringBuilder inboxTextBuilder = new StringBuilder();
-            List<Email> emails = EmailReader.getEmails();
-            ArrayList<String> messages = new ArrayList<>();
-
-            if (emails != null && !emails.isEmpty()) {
-                for (Email email : emails) {
-                    if (email != null) {
-                        messages.add("Email from " + email.id + " - " + email.title);
-                    }
-                }
-            } else {
-                inboxTextBuilder.append("No emails found.\n");
-            }
-
-            // Main content panel
-            BoxView main = new BoxView();
-            main.setRect(2, 2, 50, 50);
-            main.setShowBorder(true);
-            main.setDrawFunction((screen, rect) -> {
-                Rectangle safeRect = new Rectangle(
-                        rect.x() + 2,
-                        rect.y() + 1,
-                        Math.max(0, rect.width() - 4),
-                        Math.max(0, rect.height() - 2)); 
-
-                Writer writer = screen.writerBuilder().build();
-                for (String string : messages) {
-                    writer.text(string + "\n", safeRect, HorizontalAlign.LEFT, VerticalAlign.TOP);
-                }
-                return rect;
-            });
-
-            // Launch UI
-            ui.setRoot(main, false);
-            ui.run(); // blocks until exit
-
-        } catch (Exception e) {
-            System.err.println("Error launching inbox panel: " + e.getMessage());
+        List<Email> emails = EmailReader.getEmails();
+        List<SelectItem> emailItems = new ArrayList<>();
+        for (int i = 0; i < emails.size(); i++) {
+            Email email = emails.get(i);
+            emailItems.add(SelectItem.of(email.id + " " + email.title, Integer.toString(email.hashCode())));
         }
+        ComponentFlow flow = builder.clone().reset()
+        .withSingleItemSelector("email")
+        .selectItems(emailItems)
+        .name("Select the wanted inbox")
+        .and()
+        .build();
+
+        ComponentFlowResult cfr = flow.run();
+        int hash = Integer.valueOf(cfr.getContext().get("email"));
+        Email result;
+
+        for (Email email : emails) {
+            if (email.hashCode() == hash) {
+                String body = email.body;
+                result = email;
+                body = body.replaceAll("\\[(\\d{1,3})\\]", "\u001B[$1m");
+
+                String[] logs = {"Finding hashcode...", "Looking for color codes...", "Looking for *&#@%!..."};
+                System.out.println("\u001B[32m");
+                for (String log : logs) {
+                    for (int i = 0; i < log.length(); i++) {
+                        System.out.print(log.charAt(i));
+                        MGameUtils.delay(10);
+                    }
+                    System.out.println();
+                }
+                for (int i = 0; i < body.length(); i++) {
+                    System.out.print(body.charAt(i));
+                    int delay = 20;
+                    switch (body.charAt(i)) {
+                        case '.' -> delay = 100;
+                        case ',' -> delay = 50;
+                        case '\n' -> delay = 200;
+                    }
+                    MGameUtils.delay(delay);
+                }
+            }
+        }
+        System.out.println();
     }
 
     @ShellMethod("Time travel to a specific date")

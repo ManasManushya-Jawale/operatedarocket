@@ -2,12 +2,7 @@ package com.example.operatedarocket.commands.THE_BEGINNING;
 
 import static com.example.operatedarocket.OperateDaRocketApp.util;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.util.concurrent.CountDownLatch;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.component.flow.ComponentFlow;
@@ -37,7 +32,7 @@ public class C1Commands {
             System.out.println("Please initialize the chapter before intro");
         }
         System.out.println("""
-                Date - 25 June 2150
+                Date - 25 June 2050
                  _   _     _     ____      _
                 | \\ | |   / \\   / ___|    / \\
                 |  \\| |  / _ \\  \\___ \\   / _ \\

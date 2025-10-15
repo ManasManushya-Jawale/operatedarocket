@@ -20,8 +20,8 @@ public class EmailReader {
             XMLEventReader reader = factory.createXMLEventReader(EmailReader.class.getResourceAsStream("/Inbox.xml"));
 
             String emailId = null;
-            String sendAttr = null;
             String title = null;
+            String inboxID = null;
             StringBuilder bodyContent = new StringBuilder();
             boolean inBody = false;
 
@@ -34,7 +34,6 @@ public class EmailReader {
 
                     if ("email".equals(tagName)) {
                         emailId = startElement.getAttributeByName(new QName("id")).getValue();
-                        sendAttr = startElement.getAttributeByName(new QName("send")).getValue();
                         title = startElement.getAttributeByName(new QName("title")).getValue();
                         bodyContent.setLength(0); // reset body
                     } else if ("body".equals(tagName)) {
@@ -53,7 +52,6 @@ public class EmailReader {
                     } else if ("email".equals(tagName)) {
                         Email e = new Email();
                         e.id = emailId;
-                        e.send = "1".equals(sendAttr);
                         e.title = title;
                         e.body = bodyContent.toString().trim();
                         emails.add(e);
