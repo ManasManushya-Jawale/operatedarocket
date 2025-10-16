@@ -33,7 +33,7 @@ public class DefaultCommands {
         }
         List<Email> emails = util.eReader.emails;
         List<SelectItem> emailItems = new ArrayList<>();
-        for (int i = emails.size(); i >= 0; i--) {
+        for (int i = emails.size()-1; i >= 0; i--) {
             Email email = emails.get(i);
             if (email.sent) {
                 emailItems.add(SelectItem.of(email.id + " " + email.title, Integer.toString(email.hashCode())));
@@ -41,7 +41,6 @@ public class DefaultCommands {
         }
         if (emailItems.isEmpty()) {
             System.out.println("No emails recieved yet, do some tasks to get some");
-            return;
         }
         ComponentFlow flow = builder.clone().reset()
                 .withSingleItemSelector("email")

@@ -45,5 +45,7 @@ public class StartConfig {
                 .a("OK\n")
                 .fgDefault()
                 .a("I almost lost all of them making this game."));
+
+        NotificationService.notifyEmail("45157047-13a7-42ca-bc52-68ca393395f7");
     }
 }
