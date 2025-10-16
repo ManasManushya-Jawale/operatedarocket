@@ -123,7 +123,7 @@ public class C1Commands {
                     "Astronout " + util.getName()
                             + " attempted to resign from the intestaller travel project but reconsidered.");
 
-            NotificationService.notifyEmail("Nolan Gilmore", "43686f696365");
+            NotificationService.notifyEmail("d75d1256-84dc-44f5-b2c3-e2e14d133b93");
         }
     }
 

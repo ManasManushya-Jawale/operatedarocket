@@ -1,2 +1,2 @@
 ./gradlew bootJar
-java -jar "build/libs/operatedarocket-0.0.1-SNAPSHOT.jar"
+java --enable-native-access=ALL-UNNAMED -jar "build/libs/operatedarocket-0.0.1-SNAPSHOT.jar"

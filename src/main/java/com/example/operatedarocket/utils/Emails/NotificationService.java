@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.jline.jansi.Ansi;
 import org.springframework.stereotype.Component;
+
+import static com.example.operatedarocket.OperateDaRocketApp.util;
+
 import java.awt.*;
 import java.awt.TrayIcon.MessageType;
 import java.awt.datatransfer.Clipboard;
@@ -45,7 +48,6 @@ public class NotificationService {
             if (SystemTray.isSupported()) {
                 SystemTray tray = SystemTray.getSystemTray();
                 Image image = Toolkit.getDefaultToolkit().createImage("icon.png"); // optional icon
-
                 TrayIcon trayIcon = new TrayIcon(image, "Tray Demo");
                 trayIcon.setImageAutoSize(true);
                 trayIcon.setToolTip("Notification from Java");
@@ -63,7 +65,14 @@ public class NotificationService {
         }
     }
 
-    public static void notifyEmail(String user, String id) {
-        notify(user + " - " + id);
+    public static void notifyEmail(String id) {
+        Email e = util.eReader.getEmail(id);
+        String user = e.id, title = e.title;
+        util.eReader.emails.forEach(e1 -> {
+            if (e.uuid == e1.uuid) {
+                e1.sent = true;
+            }
+        });
+        notify(user + " - " + title);
     }
 }

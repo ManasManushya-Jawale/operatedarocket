@@ -31,30 +31,44 @@ public class DefaultCommands {
             System.err.println("TerminalUIBuilder is not initialized.");
             return;
         }
-        List<Email> emails = EmailReader.getEmails();
+        List<Email> emails = util.eReader.emails;
         List<SelectItem> emailItems = new ArrayList<>();
-        for (int i = 0; i < emails.size(); i++) {
+        for (int i = emails.size(); i >= 0; i--) {
             Email email = emails.get(i);
-            emailItems.add(SelectItem.of(email.id + " " + email.title, Integer.toString(email.hashCode())));
+            if (email.sent) {
+                emailItems.add(SelectItem.of(email.id + " " + email.title, Integer.toString(email.hashCode())));
+            }
+        }
+        if (emailItems.isEmpty()) {
+            System.out.println("No emails recieved yet, do some tasks to get some");
+            return;
         }
         ComponentFlow flow = builder.clone().reset()
-        .withSingleItemSelector("email")
-        .selectItems(emailItems)
-        .name("Select the wanted inbox")
-        .and()
-        .build();
+                .withSingleItemSelector("email")
+                .selectItems(emailItems)
+                .name("Select the wanted inbox")
+                .and()
+                .build();
 
         ComponentFlowResult cfr = flow.run();
         int hash = Integer.valueOf(cfr.getContext().get("email"));
         Email result;
 
         for (Email email : emails) {
-            if (email.hashCode() == hash) {
+            if (email.hashCode() == hash && email.sent) {
                 String body = email.body;
                 result = email;
+                body = "[0]" + body; // preventing color unbalance
+                /**
+                 * <b>For convineince</b>
+                 * [] - [ and ] respectively
+                 * () - groups [] and \\d
+                 * \\d - digit
+                 * {1, 3} - tells \d to look upto 3 digits only
+                 */
                 body = body.replaceAll("\\[(\\d{1,3})\\]", "\u001B[$1m");
 
-                String[] logs = {"Finding hashcode...", "Looking for color codes...", "Looking for *&#@%!..."};
+                String[] logs = { "Finding hashcode...", "Looking for color codes...", "Looking for *&#@%!..." };
                 System.out.println("\u001B[32m");
                 for (String log : logs) {
                     for (int i = 0; i < log.length(); i++) {
@@ -67,9 +81,10 @@ public class DefaultCommands {
                     System.out.print(body.charAt(i));
                     int delay = 20;
                     switch (body.charAt(i)) {
-                        case '.' -> delay = 100;
-                        case ',' -> delay = 50;
-                        case '\n' -> delay = 200;
+                        case ' ' -> delay = 50;
+                        case ',' -> delay = 100;
+                        case '.' -> delay = 200;
+                        case '\n' -> delay = 400;
                     }
                     MGameUtils.delay(delay);
                 }

@@ -86,7 +86,7 @@ public class EntranceTest implements Game {
                                 + score + ".");
 
                 MGameUtils.delay(1000);
-                NotificationService.notifyEmail("UNKOWN", "45736361706554686544656570576f726c64");
+                NotificationService.notifyEmail("fafc66cd-e36b-4551-9456-42005e513ccf");
             } else {
                 point.y += 1;
             }

@@ -12,16 +12,15 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 public class EmailReader {
-    public static List<Email> getEmails() {
-        ArrayList<Email> emails = new ArrayList<>();
-
+    public List<Email> emails = new ArrayList<>();
+    public List<Email> initEmails() {
         try {
             XMLInputFactory factory = XMLInputFactory.newInstance();
             XMLEventReader reader = factory.createXMLEventReader(EmailReader.class.getResourceAsStream("/Inbox.xml"));
 
             String emailId = null;
             String title = null;
-            String inboxID = null;
+            String uuid = null;
             StringBuilder bodyContent = new StringBuilder();
             boolean inBody = false;
 
@@ -35,7 +34,8 @@ public class EmailReader {
                     if ("email".equals(tagName)) {
                         emailId = startElement.getAttributeByName(new QName("id")).getValue();
                         title = startElement.getAttributeByName(new QName("title")).getValue();
-                        bodyContent.setLength(0); // reset body
+                        uuid = startElement.getAttributeByName(new QName("key")).getValue();
+                        bodyContent.setLength(0);
                     } else if ("body".equals(tagName)) {
                         inBody = true;
                     }
@@ -53,7 +53,9 @@ public class EmailReader {
                         Email e = new Email();
                         e.id = emailId;
                         e.title = title;
+                        e.uuid = uuid;
                         e.body = bodyContent.toString().trim();
+                        e.sent = false;
                         emails.add(e);
                     }
                 }
@@ -62,13 +64,12 @@ public class EmailReader {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return emails;
     }
 
-    public static Email getEmail(String id) {
-        for (Email e : getEmails()) {
-            if (id.equals(e.id)) {
+    public Email getEmail(String id) {
+        for (Email e : emails) {
+            if (id.equals(e.uuid)) {
                 return e;
             }
         }

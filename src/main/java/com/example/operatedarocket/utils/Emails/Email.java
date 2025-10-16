@@ -3,5 +3,6 @@ package com.example.operatedarocket.utils.Emails;
 import java.util.Objects;
 
 public class Email {
-    public String id, body, title;
+    public String uuid, id, body, title;
+    public boolean sent;
 }

@@ -15,14 +15,12 @@ public class UtilFuncs {
     private Chapters chapter;
     private GameState gameState;
 
-    public HashMap<Email, Boolean> emails = new HashMap<>();
-    public List<Email> notifiedEmails = new ArrayList<>();
+    public EmailReader eReader;
 
     public UtilFuncs() {
         gameState = GameState.loadGame();
-        for (Email email : EmailReader.getEmails()) {
-            emails.put(email, false);
-        }
+        eReader = new EmailReader();
+        eReader.initEmails();
     }
 
     public String getName() {

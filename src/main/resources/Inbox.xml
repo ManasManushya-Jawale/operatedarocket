@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <emails>
-    <email id="68363636406461726b2e636f6d" title="BlackMail">
+    <email key="fafc66cd-e36b-4551-9456-42005e513ccf" id="68363636406461726b2e636f6d" title="BlackMail">
         <body>
         Astronaut,
         You've been selected for the Intestaller Travel project. Congratulations? Hardly.
@@ -12,7 +12,7 @@
         To confirm your decision, type: choice 4c6976654f72446965
         </body>
     </email>
-    <email id="nolangilmore07@outlook.com" title="Help Me">
+    <email key="d75d1256-84dc-44f5-b2c3-e2e14d133b93" id="nolangilmore07@outlook.com" title="Help Me">
         <body>
         Hi Friend,
         I need your help. I'm trapped in a place I can't escape from, and I don't know how much longer I can hold on.
@@ -29,7 +29,7 @@ ________________________________________________________________________________
         Hey, it's we, we told you to resign.
         We are watching you.
 _________________________________________________________________________________
-        [31]█▓▒░ NOLAN IS DEAD ░▒▓█[0m]
+        [31]█▓▒░ NOLAN IS DEAD ░▒▓█[0]
         [90]>> Last heartbeat: 00:00:13[0]
         [31]>> Integrity breach detected...[0]
         [90]>> Location: Sector 7 - Unreachable[0]
