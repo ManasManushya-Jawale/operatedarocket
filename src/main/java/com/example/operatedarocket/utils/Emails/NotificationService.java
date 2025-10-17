@@ -1,19 +1,20 @@
 package com.example.operatedarocket.utils.Emails;
 
+import java.awt.BorderLayout;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollBar;
+import javax.swing.JTextArea;
 
 import org.jline.jansi.Ansi;
 import org.springframework.stereotype.Component;
 
 import static com.example.operatedarocket.OperateDaRocketApp.util;
-
-import java.awt.*;
-import java.awt.TrayIcon.MessageType;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.MouseEvent;
 
 @Component
 public class NotificationService {
@@ -44,25 +45,26 @@ public class NotificationService {
     }
 
     public static void notify(String str) {
-        try {
-            if (SystemTray.isSupported()) {
-                SystemTray tray = SystemTray.getSystemTray();
-                Image image = Toolkit.getDefaultToolkit().createImage("icon.png"); // optional icon
-                TrayIcon trayIcon = new TrayIcon(image, "Tray Demo");
-                trayIcon.setImageAutoSize(true);
-                trayIcon.setToolTip("Notification from Java");
-                tray.add(trayIcon);
-                trayIcon.displayMessage("Inbox Update", str + "(copied to clipboard)", MessageType.INFO);
-
-                System.out.println("CLICKED");
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(new StringSelection(str), null);
-            } else {
-                System.err.println("System tray not supported!");
-            }
-        } catch (Exception e) {
-
+        String[] words = str.split(" ");
+        StringBuilder displayStr = new StringBuilder();
+        for (int i=0;i<str.length();i++) {
+            
         }
+
+        JDialog notification = new JDialog();
+        notification.setTitle("Inbox Update");
+        notification.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        notification.setLocationRelativeTo(null);
+        notification.setLayout(new BorderLayout());
+        
+        JTextArea text = new JTextArea(str);
+        text.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        JScrollBar scroll = new JScrollBar(JScrollBar.VERTICAL);
+        scroll.add(text);
+
+        notification.add(scroll, BorderLayout.CENTER);
+        notification.setSize(300, 200);
+        notification.setVisible(true);
     }
 
     public static void notifyEmail(String id) {
