@@ -6,7 +6,7 @@ For those who don't know what the heck powershell is, it is the newer version of
 In short, its where you can type prompts.
 
 **Note**
-Operate Da Rocket is the first issue of my series "The Spacers" where the humanity tries to reach space but humans
+Operate Da Rocket is the first issue of my series **Universe 0** where the humanity tries to reach space but humans
 themself try to pull humanity back into slavery, rivalry, etc.
 You are not the Protagnist nor Antagonist, you are the part of this big picture,
 standing for 72 years in a 10000 years of human struggle but leaving a path
@@ -15,3 +15,4 @@ You are alive now may not be a big thing,
 but you should care about your life here
 because your desendants are behind you, requesting you to survive
 at all cost.
+
