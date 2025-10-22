@@ -5,13 +5,14 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollBar;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
-import org.jline.jansi.Ansi;
 import org.springframework.stereotype.Component;
 
 import static com.example.operatedarocket.OperateDaRocketApp.util;
@@ -21,21 +22,6 @@ public class NotificationService {
 
     private static final List<String> notifications = new ArrayList<>();
 
-    public static void notify(String title, String message) {
-        notifications.add(message);
-        System.out.println(
-                Ansi
-                        .ansi()
-                        .fgBrightYellow()
-                        .a("[NOTIFICATION] ")
-                        .reset()
-                        .fgBrightCyan()
-                        .a(title)
-                        .a(" - ")
-                        .reset()
-                        + message);
-    }
-
     public static List<String> getNotifications() {
         return new ArrayList<>(notifications);
     }
@@ -44,27 +30,34 @@ public class NotificationService {
         notifications.clear();
     }
 
-    public static void notify(String str) {
-        String[] words = str.split(" ");
-        StringBuilder displayStr = new StringBuilder();
-        for (int i=0;i<str.length();i++) {
-            
-        }
+    static JDialog dialog;
+    public static JDialog showNotification(String title, String message) {
+        SwingUtilities.invokeLater(() -> {
+            dialog = new JDialog(null, "Notification" + title, JDialog.ModalityType.APPLICATION_MODAL);
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setLayout(new BorderLayout());
 
-        JDialog notification = new JDialog();
-        notification.setTitle("Inbox Update");
-        notification.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        notification.setLocationRelativeTo(null);
-        notification.setLayout(new BorderLayout());
-        
-        JTextArea text = new JTextArea(str);
-        text.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        JScrollBar scroll = new JScrollBar(JScrollBar.VERTICAL);
-        scroll.add(text);
+            JTextArea textArea = new JTextArea(message);
+            textArea.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+            textArea.setEditable(false);
+            textArea.setLineWrap(true);
+            textArea.setWrapStyleWord(true);
+            textArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        notification.add(scroll, BorderLayout.CENTER);
-        notification.setSize(300, 200);
-        notification.setVisible(true);
+            JScrollPane scrollPane = new JScrollPane(textArea);
+            dialog.add(scrollPane, BorderLayout.CENTER);
+
+            JButton closeButton = new JButton("Close");
+            closeButton.addActionListener(e -> {dialog.setVisible(false);dialog.dispose();});
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.add(closeButton);
+
+            dialog.add(buttonPanel, BorderLayout.SOUTH);
+            dialog.setSize(350, 220);
+            dialog.setLocationRelativeTo(null);
+            dialog.setVisible(true);
+        });
+        return dialog;
     }
 
     public static void notifyEmail(String id) {
@@ -75,6 +68,6 @@ public class NotificationService {
                 e1.sent = true;
             }
         });
-        notify(user + " - " + title);
+        showNotification("Email Recieved", (user + " - " + title));
     }
 }

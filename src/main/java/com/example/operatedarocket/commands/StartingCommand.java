@@ -1,22 +1,18 @@
 package com.example.operatedarocket.commands;
 
+import static com.example.operatedarocket.OperateDaRocketApp.util;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.shell.component.StringInput;
 import org.springframework.shell.component.flow.ComponentFlow;
 import org.springframework.shell.component.flow.SelectItem;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellOption;
 
 import com.example.operatedarocket.utils.Chapters;
-
-import static com.example.operatedarocket.OperateDaRocketApp.util;
-import static com.example.operatedarocket.utils.UtilFuncs.*;
-import static org.jline.jansi.AnsiConsole.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.example.operatedarocket.utils.Emails.NotificationService;
 
 @ShellComponent
 public class StartingCommand {
@@ -45,6 +41,10 @@ public class StartingCommand {
             if (chapters.getLabel() == chap) {
                 System.out.println(chapters.getDesc());
                 util.setCurrentChapter(chapters);
+
+                if (chapters == Chapters.THE_BEGINNING) {
+                    NotificationService.notifyEmail("45157047-13a7-42ca-bc52-68ca393395f7");
+                }
                 break;
             }
         }

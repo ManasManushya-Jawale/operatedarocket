@@ -1,7 +1,9 @@
 package com.example.operatedarocket;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import com.example.operatedarocket.utils.UtilFuncs;
 
@@ -12,6 +14,8 @@ public class OperateDaRocketApp {
     public static void main(String[] args) {
         util = new UtilFuncs();
         System.setProperty("java.awt.headless", "false");
-        SpringApplication.run(OperateDaRocketApp.class, args);
+        new SpringApplicationBuilder(OperateDaRocketApp.class)
+            .web(WebApplicationType.NONE)
+            .run(args);
     }
 }

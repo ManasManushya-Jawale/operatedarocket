@@ -1,9 +1,15 @@
 package com.example.operatedarocket.Background;
 
+import javax.swing.JDialog;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.plaf.nimbus.NimbusLookAndFeel;
+
 import org.jline.jansi.Ansi;
 import org.springframework.stereotype.Component;
 
 import com.example.operatedarocket.utils.Emails.NotificationService;
+import com.example.operatedarocket.utils.minigame.MGameUtils;
 
 import jakarta.annotation.PostConstruct;
 
@@ -19,15 +25,6 @@ public class StartConfig {
         System.out.println("Username:\t\t" + System.getProperty("user.name"));
         System.out.println("Userhome:\t\t" + System.getProperty("user.home"));
         System.out.println("UserDir:\t\t" + System.getProperty("user.dir"));
-        System.out.println(
-                Ansi.ansi()
-                        .fgBlack()
-                        .bg(Ansi.Color.WHITE)
-                        .bold()
-                        .a("Welcome " + System.getProperty("user.name") + " to OperateDaRocket!")
-                        .a("\nType 'help' to see the list of commands available.")
-                        .a("\nType 'start' to select your chapter and start the game.")
-                        .reset());
 
         System.out.println("\n" + Ansi
                 .ansi()
@@ -40,12 +37,39 @@ public class StartConfig {
         System.out.println(Ansi
                 .ansi()
                 .fgBrightGreen()
-                .a("If your brain cells die playing this game, its ")
+                 .a("If your brain cells die playing this game, its ")
                 .fgRed()
                 .a("OK\n")
                 .fgDefault()
                 .a("I almost lost all of them making this game."));
 
-        NotificationService.notifyEmail("45157047-13a7-42ca-bc52-68ca393395f7");
+        try {
+            UIManager.setLookAndFeel(NimbusLookAndFeel.class.getName());
+        } catch (Exception e) {
+            System.out.println("Nimubus L&F not found, using default L&F");
+        }
+
+        System.out.println(
+            Ansi
+            .ansi()
+            .fgGreen()
+            .a("Type ")
+            .fgBrightCyan()
+            .a("\"exit\" ")
+            .fgGreen()
+            .a("to quit the game\n")
+            .a("Type ")
+            .fgBrightCyan()
+            .a("\"start\" ")
+            .fgGreen()
+            .a("to start the game\n")
+            .fgGreen()
+            .a("Type ")
+            .fgBrightCyan()
+            .a("\"help\" ")
+            .fgGreen()
+            .a("to get further help about the game\n")
+            .reset()
+        );
     }
 }

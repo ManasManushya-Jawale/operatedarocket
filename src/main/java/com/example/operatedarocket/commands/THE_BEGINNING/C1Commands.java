@@ -20,38 +20,6 @@ public class C1Commands {
     @Autowired
     private ComponentFlow.Builder builder;
 
-    @ShellMethod(key = "intro", value = "starts the game")
-    public void inst() {
-        try {
-            if (util.getCurrentChapter() != Chapters.THE_BEGINNING) {
-                System.out.println("Chapter: " + util.getCurrentChapter().getLabel());
-                System.out.println("Command not available in this chapter.");
-                return;
-            }
-        } catch (Exception e) {
-            System.out.println("Please initialize the chapter before intro");
-        }
-        System.out.println("""
-                Date - 25 June 2050
-                 _   _     _     ____      _
-                | \\ | |   / \\   / ___|    / \\
-                |  \\| |  / _ \\  \\___ \\   / _ \\
-                | |\\  | / ___ \\  ___) | / ___ \\
-                |_| \\_|/_/   \\_\\|____/ /_/   \\_\\
-
-
-                National Aeronautics and
-                  Space Administration
-
-                Hi                       Astronout!
-                We have planning for a new mission,
-                this  mission  will  try  its  best
-                to     go     intestaller    travel
-                to    start    your    rejistration
-                type          command           rej
-                \s""");
-    }
-
     @ShellMethod(key = "rej", value = "register yourself to the space program")
     public void rej() {
         if (util.getCurrentChapter() != Chapters.THE_BEGINNING) {
@@ -119,7 +87,7 @@ public class C1Commands {
                     Type     'time-travel 32342d372d32313535'
                     """);
 
-            NotificationService.notify("Resignation Attempt",
+            NotificationService.showNotification("Resignation Attempt",
                     "Astronout " + util.getName()
                             + " attempted to resign from the intestaller travel project but reconsidered.");
 
@@ -132,15 +100,8 @@ public class C1Commands {
         if (util.getCurrentChapter() != Chapters.THE_BEGINNING)
             return;
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < url.length(); i += 2) {
-            String str = url.substring(i, i + 2);
-            sb.append((char) Integer.parseInt(str, 16));
-        }
-        System.out.println(sb.toString());
-
         CountDownLatch latch = new CountDownLatch(1);
-        WebImageFrame frame = new WebImageFrame("Image Viewer", sb.toString());
+        WebImageFrame frame = new WebImageFrame("Image Viewer", url);
         new Thread(() -> {
             try {
                 frame.addWindowListener(new java.awt.event.WindowAdapter() {

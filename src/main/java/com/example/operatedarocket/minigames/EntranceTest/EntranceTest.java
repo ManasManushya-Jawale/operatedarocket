@@ -33,7 +33,6 @@ public class EntranceTest implements Game {
     @Override
     public void run(Terminal terminal) {
         System.out.println("Hi");
-
         terminal.enterRawMode();
         terminal.writer().print("\033[?25l"); // Hide cursor
         terminal.flush();
@@ -81,7 +80,7 @@ public class EntranceTest implements Game {
                         You are the only one among 100,000 astronouts participated
                         """);
 
-                NotificationService.notify("Entrance Test Passed",
+                NotificationService.showNotification("Entrance Test Passed",
                         "Astronout " + util.getName() + " has successfully passed the entrance test with a score of "
                                 + score + ".");
 

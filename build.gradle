@@ -1,8 +1,8 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.5.5'
-	id 'io.spring.dependency-management' version '1.1.7'
-    id 'edu.sc.seis.launch4j' version '4.0.0'
+    id 'java'
+    id 'org.springframework.boot' version '3.5.5'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'edu.sc.seis.launch4j' version '4.0.0' // optional, disable if needed
 }
 
 group = 'com.game'
@@ -10,49 +10,43 @@ version = '0.0.1-SNAPSHOT'
 description = 'Demo project for Spring Boot'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 ext {
-	set('springShellVersion', "3.4.1")
+    set('springShellVersion', "3.4.1")
 }
 
 dependencies {
-
     implementation 'org.reflections:reflections:0.10.2'
     implementation 'net.bytebuddy:byte-buddy:1.14.10'
     implementation 'org.javassist:javassist:3.29.2-GA'
-    implementation 'org.reflections:reflections:0.10.2'
     implementation 'com.fasterxml.woodstox:woodstox-core:6.5.1'
-
-    // JLine core and native terminal support
     implementation 'org.jline:jline:3.26.3'
-    implementation 'org.jline:jline-terminal-jna:3.26.3' // Match JLine version
+    implementation 'org.jline:jline-terminal-jna:3.26.3'
     implementation 'net.java.dev.jna:jna:5.13.0'
-
-    // Spring Shell starter (only one version needed)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation "org.springframework.shell:spring-shell-starter:3.2.7"
-
-    // Testing
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.shell:spring-shell-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 dependencyManagement {
-	imports {
-		mavenBom "org.springframework.shell:spring-shell-dependencies:${springShellVersion}"
-	}
+    imports {
+        mavenBom "org.springframework.shell:spring-shell-dependencies:${springShellVersion}"
+    }
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 task runJava(dependsOn: bootJar) {
@@ -61,9 +55,9 @@ task runJava(dependsOn: bootJar) {
 
     doLast {
         def jarPath = "build/libs/operatedarocket-0.0.1-SNAPSHOT.jar"
-        println "Running: java -jar ${jarPath}"
+        println "Running: java --enable-native-access=ALL-UNNAMED -jar ${jarPath}"
         exec {
-            commandLine 'java', '-jar', jarPath
+            commandLine 'java', '--enable-native-access=ALL-UNNAMED', '-jar', jarPath
         }
     }
 }

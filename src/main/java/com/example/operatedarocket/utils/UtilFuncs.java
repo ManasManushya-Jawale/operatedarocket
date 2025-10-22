@@ -1,18 +1,10 @@
 package com.example.operatedarocket.utils;
 
 import java.util.Date;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Stack;
-
-import com.example.operatedarocket.utils.Emails.Email;
 import com.example.operatedarocket.utils.Emails.EmailReader;
 import com.example.operatedarocket.utils.Saving.GameState;
 
 public class UtilFuncs {
-
-    private Chapters chapter;
     private GameState gameState;
 
     public EmailReader eReader;
