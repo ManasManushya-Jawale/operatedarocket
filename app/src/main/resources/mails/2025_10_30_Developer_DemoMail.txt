@@ -1,0 +1,7 @@
+Hi Player,
+    I hope you are comfortable in this Operating System,
+    You are currently on LotusOS and this application is called Flowermail.
+    Btw, the code of the AppFrame was copied from copilot.
+    This game contains a lot of AI content.
+    To know __ more, open the help application.
+ 
