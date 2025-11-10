@@ -81,14 +81,9 @@ public class HomeScreen extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 try {
                     AppFrame frame = appClass.getDeclaredConstructor().newInstance();
-                    JFrame window = new JFrame();
-                    window.setUndecorated(true);
-                    window.setContentPane(frame);
-                    window.setName(frame.getName());
-                    window.setAlwaysOnTop(true);
-                    window.pack();
-                    window.setLocationRelativeTo(null);
-                    window.setVisible(true);
+                    frame.setAlwaysOnTop(true);
+                    frame.setLocationRelativeTo(null);
+                    frame.setVisible(true);
                 } catch (Exception err) {
                     JOptionPane.showMessageDialog(icon, "Failed to launch " + label, "Error",
                             JOptionPane.ERROR_MESSAGE);

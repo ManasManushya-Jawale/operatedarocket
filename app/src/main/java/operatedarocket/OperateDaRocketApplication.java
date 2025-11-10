@@ -29,7 +29,6 @@ public class OperateDaRocketApplication {
             e.printStackTrace();
         }
 
-        // Define your custom font
         InputStream fontIS = OperateDaRocketApplication.class.getResourceAsStream("/fonts/JetBrainsMono-Regular.ttf");
         Font customFont;
         customFont = Font.createFont(Font.TRUETYPE_FONT, fontIS).deriveFont(12f);

@@ -23,6 +23,7 @@ public class FlowerMailApplication extends AppFrame {
         super("Flower Mail - Mails are dandelions, flying in the sky");
 
         preview = new JTextArea();
+        preview.setEditable(false);
 
         mails = new JPanel();
         mails.setLayout(new BoxLayout(mails, BoxLayout.Y_AXIS));
