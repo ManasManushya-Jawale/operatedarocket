@@ -3,6 +3,9 @@ package operatedarocket.LotusOS;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -12,6 +15,7 @@ import operatedarocket.apps.FlowerMail.FlowerMailBackend;
 import operatedarocket.apps.help.Help;
 import operatedarocket.ui.AppFrame;
 import operatedarocket.ui.DesktopIcon;
+import operatedarocket.util.Apps.AppRejistry;
 
 public class HomeScreen extends JPanel {
     public JPanel dockPanel;
@@ -41,25 +45,27 @@ public class HomeScreen extends JPanel {
         add(contentPane, BorderLayout.CENTER);
     }
 
-    private JPanel createDockPanel() {
+    private JPanel createDockPanel() throws Exception {
         JPanel dock = new JPanel();
         dock.setLayout(new BoxLayout(dock, BoxLayout.Y_AXIS));
         dock.setBackground(new Color(25, 25, 25));
         dock.setPreferredSize(new Dimension(80, 100));
         dock.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 
-        // Add icons
-        dock.add(createDockIcon("/image/FlowerMail.svg", "Flower Mail", FlowerMailApplication.class));
-        dock.add(Box.createVerticalStrut(10)); // spacing
-        dock.add(createDockIcon("/image/Help.svg", "Help", Help.class));
+        List<AppRejistry> apps = ResourceLoader.apps();
+
+        for (AppRejistry app : apps) {
+            dock.add(new DesktopIcon(app));
+            dock.add(Box.createVerticalStrut(10));
+        }
 
         return dock;
     }
 
-    private DesktopIcon createDockIcon(String resourcePath, String label, Class<? extends AppFrame> appClass) {
-        DesktopIcon icon = new DesktopIcon(getClass().getResource(resourcePath).toExternalForm(), label, appClass);
+    private DesktopIcon createDockIcon(AppRejistry rejistry) {
+        DesktopIcon icon = new DesktopIcon(rejistry);
         icon.setAlignmentX(Component.CENTER_ALIGNMENT);
-        icon.setToolTipText(label);
+        icon.setToolTipText(rejistry.name);
         icon.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         icon.setMaximumSize(new Dimension(60, 60));
 

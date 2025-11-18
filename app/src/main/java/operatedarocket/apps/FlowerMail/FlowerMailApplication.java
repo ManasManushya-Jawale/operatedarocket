@@ -45,7 +45,7 @@ public class FlowerMailApplication extends AppFrame {
         separator = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mails, preview);
         separator.setResizeWeight(0.25);
 
-        content.add(separator);
+        addContent(separator);
         setBounds(300, 500, 700, 500);
         setVisible(true);
     }
