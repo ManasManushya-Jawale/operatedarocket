@@ -23,7 +23,7 @@ public class HomeScreen extends JPanel {
     private JPanel doorsPanel;
     public static Dimension cpSize;
 
-    public HomeScreen() {
+    public HomeScreen() throws Exception {
         try {
             FlowerMailBackend.init();
         } catch (Exception e) {
@@ -61,7 +61,6 @@ public class HomeScreen extends JPanel {
 
         return dock;
     }
-
     private DesktopIcon createDockIcon(AppRejistry rejistry) {
         DesktopIcon icon = new DesktopIcon(rejistry);
         icon.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -86,12 +85,12 @@ public class HomeScreen extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 try {
-                    AppFrame frame = appClass.getDeclaredConstructor().newInstance();
+                    AppFrame frame = rejistry.mainClass.getDeclaredConstructor().newInstance();
                     frame.setAlwaysOnTop(true);
                     frame.setLocationRelativeTo(null);
                     frame.setVisible(true);
                 } catch (Exception err) {
-                    JOptionPane.showMessageDialog(icon, "Failed to launch " + label, "Error",
+                    JOptionPane.showMessageDialog(icon, "Failed to launch " + rejistry.name, "Error",
                             JOptionPane.ERROR_MESSAGE);
                     err.printStackTrace();
                 }
