@@ -1,6 +1,8 @@
 package operatedarocket.ui;
 
 import javax.swing.*;
+
+import operatedarocket.OperateDaRocketApplication;
 import operatedarocket.ResourceLoader;
 import operatedarocket.LotusOS.HomeScreen;
 
@@ -10,33 +12,33 @@ import java.awt.geom.RoundRectangle2D;
 
 public class AppFrame extends JFrame {
     // UI
-    private JPanel topBar;
-    private JPanel content;
+    public JPanel topBar;
+    public JPanel content;
 
     // Controls
-    private JButton maximize;
-    private JButton close;
-    private JButton minimize;
+    public JButton maximize;
+    public JButton close;
+    public JButton minimize;
 
     // Resizers
-    private JPanel bottomResizer;
-    private JPanel rightResizer;
-    private JPanel cornerResizer; // bottom-right corner
+    public JPanel bottomResizer;
+    public JPanel rightResizer;
+    public JPanel cornerResizer; // bottom-right corner
 
     // Drag state for moving window
-    private int dragStartScreenX = 0, dragStartScreenY = 0;
-    private int dragStartWindowX = 0, dragStartWindowY = 0;
+    public int dragStartScreenX = 0, dragStartScreenY = 0;
+    public int dragStartWindowX = 0, dragStartWindowY = 0;
 
     // Resize state
-    private int resizeStartScreenX = 0, resizeStartScreenY = 0;
-    private int resizeStartW = 0, resizeStartH = 0;
+    public int resizeStartScreenX = 0, resizeStartScreenY = 0;
+    public int resizeStartW = 0, resizeStartH = 0;
 
     // Flags
-    private boolean maximized = false;
+    public boolean maximized = false;
 
     // Style
-    private static final int RADIUS = 20;
-    private static final Dimension MIN_SIZE = new Dimension(360, 240);
+    public static final int RADIUS = 20;
+    public static final Dimension MIN_SIZE = new Dimension(360, 240);
 
     public AppFrame(String title) {
         // Frame setup
@@ -143,22 +145,20 @@ public class AppFrame extends JFrame {
     }
 
     private void onMaximize() {
-        System.out.println(HomeScreen.cpSize.toString());
 
         if (maximized) {
+            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+            gd.setFullScreenWindow(OperateDaRocketApplication.frame); // Exit fullscreen
             setSize(600, 400);
             centerOnScreen();
             maximize.setText("□");
             applyRoundedShape();
+
         } else {
-            // Fill available area (keeping slight margins)
-            int w = Math.max(HomeScreen.cpSize.width - 80, MIN_SIZE.width);
-            int h = Math.max(HomeScreen.cpSize.height, MIN_SIZE.height);
-            setSize(w, h);
-            setLocation(40, 0);
-            // Square corners when maximized
-            setShape(new Rectangle(getSize()));
+            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+            gd.setFullScreenWindow(this);
             maximize.setText("⊙");
+
         }
         maximized = !maximized;
     }

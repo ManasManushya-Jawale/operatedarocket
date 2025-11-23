@@ -1,56 +1,100 @@
 package operatedarocket.apps.FlowerMail;
 
-import javax.swing.AbstractAction;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
 import operatedarocket.ui.AppFrame;
 import operatedarocket.util.Mail.Mail;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-
 public class FlowerMailApplication extends AppFrame {
-    public JPanel mails;
-    public JTextArea preview;
-    public JSplitPane separator;
+
+    private JPanel mailsPanel;
+    private JTextArea previewArea;
+    private JSplitPane splitPane;
 
     public FlowerMailApplication() {
-        super("Flower Mail - Mails are dandelions, flying in the sky");
+        super("Flower Mail — Mails are dandelions, flying in the sky");
 
-        preview = new JTextArea();
-        preview.setEditable(false);
+        SwingUtilities.invokeLater(() -> {
+            initUI();
+            loadMails();
+            finalizeUI();
+        });
+    }
 
-        mails = new JPanel();
-        mails.setLayout(new BoxLayout(mails, BoxLayout.Y_AXIS));
+    /**
+     * Initialize the main UI components before loading content.
+     */
+    private void initUI() {
+        // Preview area (right side)
+        previewArea = new JTextArea();
+        previewArea.setEditable(false);
+        previewArea.setLineWrap(true);
+        previewArea.setWrapStyleWord(true);
 
+        JScrollPane previewScroll = new JScrollPane(previewArea);
+        previewScroll.setBorder(BorderFactory.createEmptyBorder());
+
+        // Mail list panel (left side)
+        mailsPanel = new JPanel();
+        mailsPanel.setLayout(new BoxLayout(mailsPanel, BoxLayout.Y_AXIS));
+
+        JScrollPane mailScroll = new JScrollPane(mailsPanel);
+        mailScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        // SplitPane (mail list | preview)
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mailScroll, previewScroll);
+        splitPane.setResizeWeight(0.30);
+        splitPane.setContinuousLayout(true);
+
+        addContent(splitPane);
+    }
+
+    /**
+     * Load mails from the backend and create buttons for them.
+     */
+    private void loadMails() {
         for (Mail mail : FlowerMailBackend.mails) {
-            if (mail.send) {
-                System.out.println("YoU'Ve GoT a MaIl!");
-                mails.add(new JButton(new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        preview.setText(mail.getText());
-                    }
-                }){{
-                    setText(mail.sender + ": " + mail.title);
-                }});
-            }
-        }
-        
-        separator = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, mails, preview);
-        separator.setResizeWeight(0.25);
+            if (mail == null) continue;
+            if (!mail.send) continue;
 
-        addContent(separator);
-        setBounds(300, 500, 700, 500);
+            String sender = mail.sender != null ? mail.sender : "Unknown";
+            String title = mail.title != null ? mail.title : "(No Title)";
+            String text  = mail.getText() != null ? mail.getText() : "(No Content)";
+
+            JButton mailButton = new JButton(new AbstractAction(sender + ": " + title) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    previewArea.setText(text);
+                }
+            });
+
+            mailButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            mailButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+
+            mailsPanel.add(mailButton);
+            mailsPanel.add(Box.createVerticalStrut(5));
+
+            System.out.println("You’ve got a mail!");
+        }
+    }
+
+    /**
+     * Final window setup after all UI content is loaded.
+     */
+    private void finalizeUI() {
+        setSize(800, 500);
+        setLocationRelativeTo(null);
         setVisible(true);
+
+        // After window is visible, adjust the divider for correct proportion
+        SwingUtilities.invokeLater(() ->
+                splitPane.setDividerLocation(0.30)
+        );
     }
 
     public static void main(String[] args) {
-        new FlowerMailApplication();
+        SwingUtilities.invokeLater(FlowerMailApplication::new);
     }
 }

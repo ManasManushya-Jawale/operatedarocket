@@ -26,70 +26,93 @@ import java.util.List;
 public class ResourceLoader {
 
     public static Image image(String resourcePath) {
-        try {
-            return ImageIO.read(file(resourcePath));
+        try (InputStream is = OperateDaRocketApplication.class.getResourceAsStream(resourcePath)) {
+            if (is == null) {
+                System.out.println("Image resource not found: " + resourcePath);
+                return null;
+            }
+            return ImageIO.read(is);
         } catch (IOException e) {
-            System.out.println("File " + resourcePath + " not found");
+            System.out.println("Failed to load image: " + resourcePath);
             return null;
         }
     }
 
-    public static File file(String resourcePath) {
-        // Normalize path for logging
-        StringBuilder str = new StringBuilder();
-        for (int i = 0; i < resourcePath.length(); i++) {
-            char ch = resourcePath.charAt(i);
-            str.append(ch == '/' ? File.separator : ch);
+    public static Font font(String resourcePath) {
+        try (InputStream fontIS = OperateDaRocketApplication.class.getResourceAsStream(resourcePath)) {
+            if (fontIS == null) {
+                System.out.println("Font resource not found: " + resourcePath);
+                return null;
+            }
+            return Font.createFont(Font.TRUETYPE_FONT, fontIS).deriveFont(12f);
+        } catch (Exception e) {
+            System.out.println("Failed to load font: " + e.getMessage());
+            return null;
         }
-        System.out.println("Normalized path: " + str);
+    }
 
-        // Get resource URL
+    public static List<AppRejistry> apps() throws Exception {
+        List<AppRejistry> apps = new ArrayList<>();
+        DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+
+        try (InputStream is = OperateDaRocketApplication.class.getResourceAsStream("/Apps.xml")) {
+            if (is == null) {
+                throw new IllegalArgumentException("Apps.xml not found in resources!");
+            }
+            Document document = db.parse(is);
+
+            NodeList nodes = document.getElementsByTagName("app");
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                NodeList children = node.getChildNodes();
+
+                String name = null, image = null, appClass = null;
+                Boolean onToolbar = node.getAttributes().getNamedItem("onToolbar").getTextContent().equals("1");
+
+                for (int j = 0; j < children.getLength(); j++) {
+                    Node child = children.item(j);
+                    if (child.getNodeType() != Node.ELEMENT_NODE) continue;
+
+                    switch (child.getNodeName()) {
+                        case "name" -> name = child.getTextContent().trim();
+                        case "image" -> image = child.getTextContent().trim();
+                        case "class" -> appClass = child.getTextContent().trim();
+                    }
+                }
+                Class<?> rawClass = Class.forName(appClass);
+                if (!AppFrame.class.isAssignableFrom(rawClass)) {
+                    throw new IllegalArgumentException("Class " + appClass + " does not extend AppFrame");
+                }
+                Class<? extends AppFrame> frameClass = rawClass.asSubclass(AppFrame.class);
+                apps.add(new AppRejistry(name, image, frameClass, onToolbar));
+            }
+        }
+        return apps;
+    }
+
+    public static File file(String resourcePath) {
         URL url = OperateDaRocketApplication.class.getResource(resourcePath);
         if (url == null) {
             System.out.println("Resource not found: " + resourcePath);
             return null;
         }
 
-        // Convert URL to File
         try {
+            // Works if resource is a real file (IDE/dev mode)
             return new File(url.toURI());
         } catch (Exception e) {
-            System.out.println("Failed to convert URL to File: " + e.getMessage());
+            // Inside JAR: not a real file
+            System.out.println("Resource is inside JAR, cannot convert to File: " + e.getMessage());
             return null;
         }
     }
 
-    public static Font font(String resourcePath) {
-
-        InputStream fontIS = OperateDaRocketApplication.class.getResourceAsStream(resourcePath);
-        Font customFont;
-        try {
-            customFont = Font.createFont(Font.TRUETYPE_FONT, fontIS).deriveFont(12f);
-            return customFont;
-        } catch (Exception e) {
-            System.out.println("Smthing went wrong");
-            return null;
+    public static InputStream stream(String resourcePath) {
+        InputStream is = OperateDaRocketApplication.class.getResourceAsStream(resourcePath);
+        if (is == null) {
+            System.out.println("Resource not found: " + resourcePath);
         }
-
+        return is;
     }
 
-    public static List<AppRejistry> apps() throws Exception {
-        ArrayList<AppRejistry> apps = new ArrayList<>();
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document document = db.newDocument();
-
-        NodeList nodes = document.getElementsByTagName("apps");
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
-            NodeList childNodes = node.getChildNodes();
-
-            String name = childNodes.item(0).getTextContent();
-            String image = childNodes.item(1).getTextContent();
-            String appClass = childNodes.item(2).getTextContent();
-
-            apps.add(new AppRejistry(name, image, ((Class<? extends AppFrame>)Class.forName(appClass))));
-        }
-        return apps;
-    }
 }

@@ -5,9 +5,11 @@ import java.awt.Color;
 import operatedarocket.util.Apps.AppRejistry;
 import org.apache.batik.swing.JSVGCanvas;
 
+import javax.swing.*;
+
 public class DesktopIcon extends JSVGCanvas {
     public String name;
-    public Class<? extends AppFrame> app;
+    public Class<? extends JFrame> app;
 
     public DesktopIcon(AppRejistry rejistry) {
         this.name = rejistry.name;
