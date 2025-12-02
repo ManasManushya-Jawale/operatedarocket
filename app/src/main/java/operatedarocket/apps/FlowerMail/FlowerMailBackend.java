@@ -73,16 +73,4 @@ public class FlowerMailBackend {
         mails.add(new Mail(sender, title, date, bodyBuilder.toString()){{send=true;}});
     }
 
-    public static void main(String[] args) {
-        try {
-            init();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Emails:\n");
-        for (Mail mail : mails) {
-            System.out.println(mail.getText());
-        }
-    }
 }

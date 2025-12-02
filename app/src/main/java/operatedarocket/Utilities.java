@@ -13,12 +13,11 @@ import java.lang.reflect.InvocationTargetException;
 
 public class Utilities {
 
-
     /**
      * Create a DesktopIcon wired with a mouse listener to launch the app via reflection.
      * Includes a small hover effect (icon background + scale-increase).
      */
-    public static DesktopIcon createDockIcon(AppRejistry rejistry) {
+    public static DesktopIcon createDockIcon(JFrame owner, AppRejistry rejistry) {
         DesktopIcon icon = new DesktopIcon(rejistry);
         icon.setAlignmentX(Component.CENTER_ALIGNMENT);
         icon.setToolTipText(rejistry.name);
@@ -34,7 +33,9 @@ public class Utilities {
             @Override
             public void mouseEntered(MouseEvent e) {
                 icon.setOpaque(true);
-                icon.setPreferredSize(new Dimension(Math.min(80, original.width + 12), Math.min(80, original.height + 12)));
+                icon.setPreferredSize(new Dimension(
+                        Math.min(80, original.width + 12),
+                        Math.min(80, original.height + 12)));
                 icon.revalidate();
                 icon.repaint();
             }
@@ -49,14 +50,16 @@ public class Utilities {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                // Launch the AppFrame on the EDT
                 SwingUtilities.invokeLater(() -> {
                     try {
-                        JFrame frame = rejistry.mainClass.getDeclaredConstructor().newInstance();
-                        if (rejistry.mainClass != AppsMenu.class) {
-                            frame.setLocationRelativeTo(null);
-                        }
-                        frame.setVisible(true);
+                        // Expect each app to expose a JPanel UI
+                        JFrame appUI = rejistry.mainClass
+                                .getDeclaredConstructor(String.class)
+                                .newInstance(rejistry.name);
+
+                        appUI.setLocationRelativeTo(owner);
+                        appUI.setVisible(true);
+
                     } catch (InvocationTargetException ite) {
                         showLaunchError(icon, rejistry.name, ite.getTargetException());
                     } catch (Exception ex) {
@@ -72,9 +75,9 @@ public class Utilities {
     public static void showLaunchError(Component parent, String appName, Throwable err) {
         err.printStackTrace();
         JOptionPane.showMessageDialog(parent,
-                "Failed to launch " + appName + ":\n" + err.getClass().getSimpleName() + ": " + err.getMessage(),
+                "Failed to launch " + appName + ":\n" +
+                        err.getClass().getSimpleName() + ": " + err.getMessage(),
                 "Launch Error",
                 JOptionPane.ERROR_MESSAGE);
     }
-
 }

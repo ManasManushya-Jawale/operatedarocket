@@ -5,3 +5,6 @@ Hi Player,
     This OS has a lot of customizable features implemented in it by default.
     No one really uses it yet, but we are grateful to know that you are the first person
     to experience how it feels to live in an Operating System that treats you as the Mother Nature's son.
+
+Credits:
+    Manas Jawale, Manas Jawale and Manas Jawale

@@ -10,18 +10,18 @@ import java.io.File;
 
 public class RunAJarApplication extends AppFrame {
 
-    public JLabel title;
+    public JLabel titleText;
     public JButton runAJar;
 
-    public RunAJarApplication() {
-        super("Ja Runner");
+    public RunAJarApplication(String title) {
+        super(title);
 
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
 
-        title = new JLabel("Ja Runner");
-        title.setFont(LocalFonts.INTER.deriveFont(Font.BOLD, 50));
-        title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        addContent(title);
+        titleText = new JLabel(title);
+        titleText.setFont(LocalFonts.INTER.deriveFont(Font.BOLD, 50));
+        titleText.setAlignmentX(Component.CENTER_ALIGNMENT);
+        addContent(titleText);
 
         runAJar = new JButton(new AbstractAction("Run A Jar") {
             @Override

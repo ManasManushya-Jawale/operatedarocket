@@ -11,6 +11,7 @@ import java.awt.geom.RoundRectangle2D;
 
 public class AppsMenu extends JFrame {
     public JPanel grid;
+
     public AppsMenu() throws Exception {
         setUndecorated(true);
         setResizable(false);
@@ -21,15 +22,17 @@ public class AppsMenu extends JFrame {
         grid.setBackground(new Color(40, 40, 40));
 
         for (AppRejistry appRejistry : ResourceLoader.apps()) {
-            DesktopIcon icon = Utilities.createDockIcon(appRejistry);
+            // Since we no longer have an "owner" JFrame, pass `this` instead
+            DesktopIcon icon = Utilities.createDockIcon(this, appRejistry);
             grid.add(icon);
         }
 
         setContentPane(grid);
 
+        // Rounded corners
         setShape(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 20, 20));
 
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
-
     }
 }

@@ -4,8 +4,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
+import operatedarocket.ResourceLoader;
 import operatedarocket.ui.AppFrame;
+import operatedarocket.util.LocalFonts;
 import operatedarocket.util.Mail.Mail;
+import operatedarocket.util.PlayerData.PlayerDataSaverAndReader;
+import org.apache.batik.swing.JSVGCanvas;
 
 public class FlowerMailApplication extends AppFrame {
 
@@ -13,8 +17,8 @@ public class FlowerMailApplication extends AppFrame {
     private JTextArea previewArea;
     private JSplitPane splitPane;
 
-    public FlowerMailApplication() {
-        super("Flower Mail — Mails are dandelions, flying in the sky");
+    public FlowerMailApplication(String title) {
+        super(title);
 
         SwingUtilities.invokeLater(() -> {
             initUI();
@@ -29,6 +33,7 @@ public class FlowerMailApplication extends AppFrame {
     private void initUI() {
         // Preview area (right side)
         previewArea = new JTextArea();
+        previewArea.setFont(LocalFonts.HELVETICA.deriveFont(16f));
         previewArea.setEditable(false);
         previewArea.setLineWrap(true);
         previewArea.setWrapStyleWord(true);
@@ -56,8 +61,9 @@ public class FlowerMailApplication extends AppFrame {
      */
     private void loadMails() {
         for (Mail mail : FlowerMailBackend.mails) {
-            if (mail == null) continue;
-            if (!mail.send) continue;
+            if (mail == null) continue; // not a mail
+            if (!mail.send) continue; // not sended yet
+            if (mail.date.isAfter(PlayerDataSaverAndReader.load().date)) continue; // far dated
 
             String sender = mail.sender != null ? mail.sender : "Unknown";
             String title = mail.title != null ? mail.title : "(No Title)";
@@ -94,7 +100,4 @@ public class FlowerMailApplication extends AppFrame {
         );
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(FlowerMailApplication::new);
-    }
 }

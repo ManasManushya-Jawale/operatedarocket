@@ -13,7 +13,6 @@ import java.util.Properties;
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
-import com.google.gson.Gson;
 import operatedarocket.LotusOS.HomeScreen;
 import operatedarocket.util.PlayerData.PlayerData;
 import operatedarocket.util.PlayerData.PlayerDataSaverAndReader;
@@ -43,22 +42,22 @@ public class OperateDaRocketApplication {
                 UIManager.put(key, customFont);
             }
         }
-
         frame = new JFrame();
         frame.setUndecorated(true);
-        GraphicsDevice gd = GraphicsEnvironment
-                .getLocalGraphicsEnvironment()
-                .getDefaultScreenDevice();
-
-        gd.setFullScreenWindow(frame);
-
-        frame.setContentPane(new HomeScreen());
+        frame.setContentPane(new HomeScreen(frame));
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Operate Da Rocket - Universe 0");
+        GraphicsDevice device = GraphicsEnvironment
+                .getLocalGraphicsEnvironment()
+                .getDefaultScreenDevice();
+
+        device.setFullScreenWindow(frame);
+        frame.setAlwaysOnTop(false);
         frame.setVisible(true);
+
         PlayerDataSaverAndReader.save(new PlayerData(){{
-            date = LocalDate.of(2025, 12, 27);
+            date = LocalDate.of(2125, 12, 27);
             name = "Manas";
         }});
 

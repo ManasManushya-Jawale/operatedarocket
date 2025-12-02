@@ -1,247 +1,232 @@
 package operatedarocket.ui;
 
 import javax.swing.*;
-
-import operatedarocket.OperateDaRocketApplication;
-import operatedarocket.ResourceLoader;
-import operatedarocket.LotusOS.HomeScreen;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 
 public class AppFrame extends JFrame {
-    // UI
-    public JPanel topBar;
-    public JPanel content;
 
-    // Controls
-    public JButton maximize;
-    public JButton close;
-    public JButton minimize;
+    private final JPanel topBar;
+    public final JPanel content;
+    private final JButton close;
+    private final JButton maximize;
+    private final JButton minimize;
 
-    // Resizers
-    public JPanel bottomResizer;
-    public JPanel rightResizer;
-    public JPanel cornerResizer; // bottom-right corner
+    private final JPanel topResizer, bottomResizer, leftResizer, rightResizer;
 
-    // Drag state for moving window
-    public int dragStartScreenX = 0, dragStartScreenY = 0;
-    public int dragStartWindowX = 0, dragStartWindowY = 0;
-
-    // Resize state
-    public int resizeStartScreenX = 0, resizeStartScreenY = 0;
-    public int resizeStartW = 0, resizeStartH = 0;
-
-    // Flags
-    public boolean maximized = false;
-
-    // Style
-    public static final int RADIUS = 20;
-    public static final Dimension MIN_SIZE = new Dimension(360, 240);
+    private boolean maximized = false;
+    private static final int RADIUS = 15;
+    private Point initialClick;
 
     public AppFrame(String title) {
-        // Frame setup
-        setAlwaysOnTop(true);
+        super(title);
+
         setUndecorated(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setSize(600, 400);
-        setMinimumSize(MIN_SIZE);
-        setLayout(new BorderLayout());
+        setSize(900, 600);
         setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
         // Top bar
         topBar = new JPanel(new BorderLayout());
         topBar.setBackground(new Color(50, 50, 50));
 
-        // Left: title
         JLabel titleLabel = new JLabel(title);
-        titleLabel.setFont(ResourceLoader.font("/fonts/JetBrainsMono-Bold.ttf").deriveFont(16f));
-        titleLabel.setForeground(Color.white);
+        titleLabel.setForeground(Color.WHITE);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
         topBar.add(titleLabel, BorderLayout.WEST);
 
-        // Right: window buttons
         JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 4));
         controls.setOpaque(false);
 
         minimize = new JButton("_");
-        minimize.setFocusable(false);
-        minimize.addActionListener(e -> onMinimize());
-
         maximize = new JButton("□");
-        maximize.setFocusable(false);
-        maximize.addActionListener(e -> onMaximize());
-
         close = new JButton("X");
-        close.setFocusable(false);
-        close.addActionListener(e -> onClose());
 
         controls.add(minimize);
         controls.add(maximize);
         controls.add(close);
         topBar.add(controls, BorderLayout.EAST);
 
-        // Drag to move (topBar only — avoids conflict with content)
-        addMoveDragBehavior(topBar);
-
-        // Content
+        // Content area
         content = new JPanel(new BorderLayout());
-
-        // Resizers
-        bottomResizer = new JPanel();
-        bottomResizer.setPreferredSize(new Dimension(0, 6));
-        bottomResizer.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
-        addResizeBehavior(bottomResizer, true, false);
-
-        rightResizer = new JPanel();
-        rightResizer.setPreferredSize(new Dimension(6, 0));
-        rightResizer.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
-        addResizeBehavior(rightResizer, false, true);
-
-        cornerResizer = new JPanel();
-        cornerResizer.setPreferredSize(new Dimension(8, 8));
-        cornerResizer.setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
-        addResizeBehavior(cornerResizer, true, true);
-
-        // Corner resizer sits inside a small container at SE corner
-        JPanel south = new JPanel(new BorderLayout());
-        south.setOpaque(false);
-        south.add(bottomResizer, BorderLayout.CENTER);
-
-        JPanel southEast = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        southEast.setOpaque(false);
-        southEast.add(cornerResizer);
-        south.add(southEast, BorderLayout.EAST);
-
-        // Add components
-        add(topBar, BorderLayout.NORTH);
         add(content, BorderLayout.CENTER);
-        add(south, BorderLayout.SOUTH);
+
+        // Button actions
+        close.addActionListener(e -> dispose());
+        maximize.addActionListener(e -> onMaximize());
+        minimize.addActionListener(e -> setState(JFrame.ICONIFIED));
+
+        // Rounded corners update on resize
+        addComponentListener(new ComponentAdapter() {
+            @Override public void componentResized(ComponentEvent e) {
+                if (!maximized) applyRoundedShape();
+            }
+        });
+
+        // Dragging logic
+        topBar.addMouseListener(new MouseAdapter() {
+            @Override public void mousePressed(MouseEvent e) {
+                if (maximized) {
+                    onMaximize();
+                    try {
+                        Robot robot = new Robot();
+                        robot.mouseMove(topBar.getX(), topBar.getY());
+                    } catch (AWTException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+                initialClick = e.getPoint();
+            }
+            @Override public void mouseReleased(MouseEvent e) {
+                initialClick = null;
+            }
+        });
+        topBar.addMouseMotionListener(new MouseAdapter() {
+            @Override public void mouseDragged(MouseEvent e) {
+                if (initialClick != null && !maximized) {
+                    int thisX = getLocation().x;
+                    int thisY = getLocation().y;
+                    int xMoved = e.getX() - initialClick.x;
+                    int yMoved = e.getY() - initialClick.y;
+                    setLocation(thisX + xMoved, thisY + yMoved);
+                }
+            }
+        });
+
+        bottomResizer = new JPanel();
+        rightResizer = new JPanel();
+        leftResizer = new JPanel();
+        topResizer = new JPanel();
+
+        topResizer.setBackground(new Color(50, 50, 50));
+        int RESIZE_MARGIN = 6;
+
+        topResizer.setPreferredSize(new Dimension(0, RESIZE_MARGIN));
+        leftResizer.setPreferredSize(new Dimension(RESIZE_MARGIN, 0));
+        rightResizer.setPreferredSize(new Dimension(RESIZE_MARGIN, 0));
+        bottomResizer.setPreferredSize(new Dimension(0, RESIZE_MARGIN));
+
+        topResizer.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                Rectangle bounds = getBounds();
+                int dy = e.getYOnScreen();
+                int newH = bounds.height + bounds.y - dy;
+                if (newH > getMinimumSize().height) {
+                    bounds.height = newH;
+                    bounds.y = dy;
+                    setBounds(bounds);
+                    applyRoundedShape();
+                }
+            }
+        });
+
+        bottomResizer.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                Rectangle bounds = getBounds();
+                int dy = e.getYOnScreen();
+                int newH = dy - bounds.y;
+                if (newH > getMinimumSize().height) {
+                    bounds.height = newH;
+                    setBounds(bounds);
+                    applyRoundedShape();
+                }
+            }
+        });
+
+        leftResizer.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                Rectangle bounds = getBounds();
+                int dx = e.getXOnScreen();
+                int newW = bounds.width + bounds.x - dx;
+                if (newW > getMinimumSize().width) {
+                    bounds.width = newW;
+                    bounds.x = dx;
+                    setBounds(bounds);
+                    applyRoundedShape();
+                }
+            }
+        });
+
+        rightResizer.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                Rectangle bounds = getBounds();
+                int dx = e.getXOnScreen();
+                int newW = dx - bounds.x;
+                if (newW > getMinimumSize().width) {
+                    bounds.width = newW;
+                    setBounds(bounds);
+                    applyRoundedShape();
+                }
+            }
+        });
+
+        add(new JPanel()
+        {
+            {
+                setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+                add(topResizer);
+                add(topBar);
+            }
+        }, BorderLayout.NORTH);
+
+        add(bottomResizer, BorderLayout.SOUTH);
         add(rightResizer, BorderLayout.EAST);
+        add(leftResizer, BorderLayout.WEST);
 
-        // Round shape
+        // Force the window to the top of the Z-order
+        setAlwaysOnTop(true);
         SwingUtilities.invokeLater(this::applyRoundedShape);
+        setVisible(true);
     }
 
-    // Public API
-    public Component addContent(Component component) {
-        return content.add(component);
+    public void addContent(Component comp, Object constraint) {
+        content.add(comp, constraint);
+        content.revalidate();
+        content.repaint();
     }
 
-    // Public API
-    public Component addContent(Component component, Object constraint) {
-        content.add(component, constraint);
-        return component;
+    public void addContent(Component comp) {
+        content.add(comp);
+        content.revalidate();
+        content.repaint();
     }
-
-    // Actions
-    private void onClose() {
-        dispose();
-    }
-
-    private void onMinimize() {
-        setState(Frame.ICONIFIED);
-    }
-
     private void onMaximize() {
-
         if (maximized) {
-            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-            gd.setFullScreenWindow(OperateDaRocketApplication.frame); // Exit fullscreen
-            setSize(600, 400);
-            centerOnScreen();
+            // Restore to default size
+            setBounds(100, 100, 900, 600);
             maximize.setText("□");
             applyRoundedShape();
-
         } else {
-            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-            gd.setFullScreenWindow(this);
-            maximize.setText("⊙");
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            GraphicsDevice gd = ge.getDefaultScreenDevice();
+            Rectangle bounds = gd.getDefaultConfiguration().getBounds();
 
+            // Leave space for your custom top bar
+            int topBarHeight = topBar.getPreferredSize().height - 10; // dynamic height
+            int margin = 0; // optional extra margin
+
+            setBounds(bounds.x + margin,
+                    bounds.y + topBarHeight,
+                    bounds.width,
+                    bounds.height - topBarHeight - margin);
+
+            setShape(null); // remove rounded corners when maximized
+            maximize.setText("⊙");
         }
         maximized = !maximized;
+        revalidate();
+        repaint();
     }
 
-    // Helpers
-    private void centerOnScreen() {
-        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        int x = (screen.width - getWidth()) / 2;
-        int y = (screen.height - getHeight()) / 2;
-        setLocation(Math.max(0, x), Math.max(0, y));
-    }
 
     private void applyRoundedShape() {
-        setShape(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), RADIUS, RADIUS));
-    }
-
-    private void addMoveDragBehavior(Component c) {
-        c.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                dragStartScreenX = e.getXOnScreen();
-                dragStartScreenY = e.getYOnScreen();
-                dragStartWindowX = getX();
-                dragStartWindowY = getY();
-            }
-        });
-        c.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (maximized) return; // disable move while maximized
-                int dx = e.getXOnScreen() - dragStartScreenX;
-                int dy = e.getYOnScreen() - dragStartScreenY;
-                setLocation(dragStartWindowX + dx, dragStartWindowY + dy);
-            }
-        });
-    }
-
-    private void addResizeBehavior(JComponent resizer, boolean resizeY, boolean resizeX) {
-        resizer.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                resizeStartScreenX = e.getXOnScreen();
-                resizeStartScreenY = e.getYOnScreen();
-                resizeStartW = getWidth();
-                resizeStartH = getHeight();
-            }
-        });
-        resizer.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (maximized) return; // disable resize while maximized
-
-                int dx = e.getXOnScreen() - resizeStartScreenX;
-                int dy = e.getXOnScreen(); // placeholder to avoid unused warning (we use both)
-                dy = e.getYOnScreen() - resizeStartScreenY;
-
-                int newW = resizeStartW;
-                int newH = resizeStartH;
-
-                if (resizeX) newW = clamp(resizeStartW + dx, MIN_SIZE.width, Integer.MAX_VALUE);
-                if (resizeY) newH = clamp(resizeStartH + dy, MIN_SIZE.height, Integer.MAX_VALUE);
-
-                // Apply new size
-                setSize(newW, newH);
-
-                // Keep rounded shape in sync unless maximized
-                applyRoundedShape();
-            }
-        });
-    }
-
-    private int clamp(int v, int min, int max) {
-        if (v < min) return min;
-        if (v > max) return max;
-        return v;
-    }
-
-    // Keep shape synced whenever size changes programmatically
-    @Override
-    public void setSize(int width, int height) {
-        super.setSize(width, height);
-        if (!maximized) {
-            applyRoundedShape();
-        }
+        setShape(new RoundRectangle2D.Double(
+                0, 0, getWidth(), getHeight(), RADIUS, RADIUS));
     }
 }

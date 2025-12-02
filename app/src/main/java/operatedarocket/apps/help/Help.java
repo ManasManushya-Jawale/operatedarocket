@@ -16,8 +16,8 @@ import java.awt.event.ActionEvent;
 
 public class Help extends AppFrame {
     public JTextArea text;
-    public Help() {
-        super("Help--");
+    public Help(String title) {
+        super(title);
 
         text = new JTextArea("""
             Theres no help
@@ -29,7 +29,4 @@ public class Help extends AppFrame {
         setVisible(true);
     }
 
-    public static void main(String[] args) {
-        new Help();
-    }
 }

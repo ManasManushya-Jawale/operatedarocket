@@ -1,12 +1,9 @@
 package operatedarocket.util.PlayerData;
 
-import com.google.gson.annotations.Expose;
-
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class PlayerData {
-    @Expose
+public class PlayerData implements Serializable {
     public String name;
-    @Expose
     public LocalDate date;
 }
